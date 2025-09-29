@@ -1,0 +1,17 @@
+const mongoose = require('mongoose');
+const User = require('./User');
+
+const Schema = mongoose.Schema;
+
+const taskSchema = new Schema (
+    {user: {type: Schema.Types.ObjectId, ref: "users", required: true},          //Pendiente investigar
+    task: {type: String, enum: ["write", "edit", "publish", "design"], required: true},
+    time: {type: Number, required: true, min: 0}
+    },
+    {timestaps: true}
+);
+
+// Modelo
+const Task = mongoose.model("tasks", taskSchema, "tasks");
+
+module.exports = Task;
