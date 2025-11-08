@@ -1,15 +1,25 @@
-const express = require("express"); // express es mi mesero del restaurante
+const express = require("express"); 
 const { connectDB } = require("./src/config/db")
 
-const app = express();     //por convención usamos app
+
+const app = express();   
+const PORT = 3000;
+
+app.use(express.json());
 
 connectDB();
 
-app.use("/saludar", (req, res, next) => {
-    return res.status(200).json("¡Hola! Esto funciona") //ejemplo de get /saludar
- })
+// Rutas
+const userRoutes = require("./src/api/routes/user.routes");
+const taskRoutes = require("./src/api/routes/task.routes");
 
-app.listen(3000, () => {
-    console.log("servidor 1 levantado en http://localhost:3000") // levantamos el servidor en 3000
-})
+app.use("/users", userRoutes);
+app.use("/tasks", taskRoutes);
 
+// Levantar servidor
+app.listen(PORT, () => {
+  console.log(`Servidor levantado en http://localhost:${PORT}`);
+});
+
+console.log("typeof userRoutes:", typeof userRoutes);
+console.log("typeof taskRoutes:", typeof taskRoutes);
