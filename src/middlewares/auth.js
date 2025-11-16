@@ -7,3 +7,10 @@ function authenticateMiddleware (req, res, next) {
 module.exports = authenticateMiddleware;
 
 // Esto tengo que ajustarlo a mi código
+
+/* function authenticateMiddleware(req, res, next) {
+  if (!req.user) {
+    return res.redirect('/login');
+  }
+  next();
+} */

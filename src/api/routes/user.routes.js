@@ -1,10 +1,19 @@
 const express = require("express");
-const {getUsers} = require("../controllers/user.controller")
+const { getUsers, getUserById, createUser, updateUser, deleteUser } = require("../controllers/user.controller")
 
+//tengo que agregar arriba el changeRole de userControl 
 
-//Creo mi ruta
-const router = express.Router();
+const userRouter = express.Router();
 
-router.get("/", getUsers);
+//Creo mi rutas
+userRouter.get("/", getUsers);         
+userRouter.get("/:id", getUserById);   
+userRouter.post("/", createUser);     
+userRouter.put("/:id", updateUser);   
+userRouter.delete("/:id", deleteUser);
 
-module.exports = router;
+// Necesito ruta para cambiar rol desde admin
+
+// userRouter.patch("/:id/role", changeRole) // Esto no lo tengo claro!!! INVESTIGAR
+
+module.exports = userRouter;

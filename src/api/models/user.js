@@ -1,8 +1,7 @@
 const mongoose = require('mongoose');
-
-//Schema
-
 const Schema = mongoose.Schema;
+
+//Creo mi esquema de User
 
 const userSchema = new Schema (
     {

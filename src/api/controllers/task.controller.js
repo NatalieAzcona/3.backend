@@ -7,36 +7,69 @@ const getTask = async (req, res, next) => {  //consulta a la bbdd
         const tasks = await Task.find()     //.find para encontrar
         return res.status(200).json(tasks);
     } catch (error) {
-        return res.status(400).json(error);
+        console.log(error);
+        return res.status(500).json({
+            message: "error al obtener tasks", error
+        });
     }
 }
 
-//Estoy probando con el postTasks, tengo que confirmar
+//Creando el task con new
 const postTask = async (req, res, next) => {
     try {
         const newTask = new Task(req.body);     //req.body para crear en el cuerpo
-        const taskSaved = await newTask.save(); //.save para guardar
+        const taskSaved = await newTask.save(); //.save para guardar en la bbdd
         return res.status(201).json(taskSaved);
     } catch (error) {
-        return res.status()
+        console.log(error);
+        return res.status(400).json({
+            message: "Error al crear task", error,
+        })
     }
 }
 
-
-//Esto para consultar tambien 
-const updateTask = async (req, res, next) => {
+/* Cuando creas tast con create
+const postTask = async (req, res, next) => {
     try {
-        const { id } = req.params;       //.params para los parámetros
-        const newTask = new Task(req.body);   // si creo una new task y le pongo el mismo id, se actualiza
-        newTask._id = id;
-        const taskUpdated = await Task.findByIdAndUpdate(id, newTask, {
-            new: true,
-        });
-        return res.status(200).json(taskUpdated)
+        const { user, task, time } = req.body;
+        const newTask = await Task.create({user, task, time})
+        return res.status(201).json(newTask)
     } catch (error) {
-        return res.status(400).json("error")
+        return res.status(500).json({
+        message: "error al crear task",
+        error
+        })
     }
 }
+*/
+
+const updateTask = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const taskUpdated = await Task.findByIdAndUpdate(
+            id, 
+            { $set: req.body }, // $set cambia valores
+            { new: true, runValidators: true} //me devuelve lo actualziado y según schema
+        );
+        if (!taskUpdated) {
+            return res.status(404).json({
+                message: "task not found"
+            })
+        }
+        return res.status(200).json(taskUpdated);
+    } catch(error) {
+        console.log(error);
+        return res.status(400).json({
+            message: "task can't be updated",
+            error
+        })
+    }
+}
+
+
+
+
 
 const deleteTask = async (req, res, next) => {
     try {
@@ -47,10 +80,11 @@ const deleteTask = async (req, res, next) => {
             elemento: taskDeleted
         })
     } catch (error) {
+        console.log(error);
         return res.status(400).json("error")
     }
 }
 
  
 
-module.exports = {getTask, postTask, updateTask, deleteTask};  //exporto
+module.exports = {getTask, postTask, updateTask, deleteTask}; 
