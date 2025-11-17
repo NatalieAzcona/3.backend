@@ -1,5 +1,7 @@
 const User = require("../models/User");
 
+//ME FALTA UNO DE LOGIN?
+
 const getUsers = async (req, res) => {  //consulta a la bbdd
     try {
         const users = await User.find()     //.find para encontrar
@@ -27,11 +29,24 @@ try {
 }
 };
 
-const createUser = async(req,res) => {
+const registerUser = async(req,res) => {
     try {
+        const {name, email, password} = req.body;
+
+        if(!name || !email || !password) {
+            return  res.status(400).json({message: "¿y si terminas de escribir lo que te falta? :/" })
+        }
+
+        const userExists = await User.findOne({email})
+        if (userExists) {
+            return res.status(400).json({message: "este email ya está registrado >:("})
+        }
+
         const newUser = new User(req.body);
         newUser.role = "user";
+
         const savedUser = await newUser.save();
+
         return res.status(201).json(savedUser);
     } catch (error) {
         console.log(error);
@@ -40,6 +55,8 @@ const createUser = async(req,res) => {
         })
     }
 }
+
+
 //Este updateUser no me sirve cuando hago la prueba en Insomnia
 /* const updateUser = async (req, res) => {
     try {
@@ -111,4 +128,4 @@ const changeRole = async (req, res) => {
 }
 */
 
-module.exports = {getUsers, getUserById, createUser, updateUser, deleteUser}; 
+module.exports = {getUsers, getUserById, registerUser, updateUser, deleteUser}; 

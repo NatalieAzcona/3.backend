@@ -1,4 +1,4 @@
-[
+const tasks = [
     {
       "user": "1",
       "task": "write",
@@ -15,3 +15,7 @@
       "time": 2
     }
   ]
+
+  module.exports = tasks;
+
+  //estos son solo ejemplos para hacer pruebas

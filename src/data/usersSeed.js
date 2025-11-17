@@ -1,4 +1,5 @@
-[
+
+const users = [
     {
       "name": "Mario González",
       "email": "mario@gmail.com",
@@ -19,3 +20,7 @@
     }
   ]
   
+
+  module.exports = users;
+
+    //estos son solo ejemplos para hacer pruebas
