@@ -23,4 +23,4 @@ const users = [
 
   module.exports = users;
 
-    //estos son solo ejemplos para hacer pruebas
+  

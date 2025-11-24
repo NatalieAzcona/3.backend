@@ -17,3 +17,5 @@ const setSeed = async () => {
 }
 
   //para inyectar los ejemplos de prueba, repasar modulo Seeds
+
+  module.exports = {setSeed}

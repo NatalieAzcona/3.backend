@@ -25,7 +25,7 @@ const getTasksByUser = async (req, res, next) => {
         );
         return res.status(200).json(tasks)
     } catch (error) {
-        return res.status(500).json("no se encontró la tarea asignada", error)
+        return res.status(500).json({message: "no se encontró la tarea asignada", error})
     }
 }
 
@@ -51,7 +51,14 @@ const getTaskById = async (req, res, next) => {
 //Creando el task con new
 const postTask = async (req, res, next) => {
     try {
-        const newTask = new Task(req.body);     // para crear en el cuerpo
+        const {user, task, time} = req.body;
+     
+        const userExists = await User.findById(user);
+        if (!userExists) {
+            return res.status(404).json({ message: "User no encontrado" });
+        }
+
+        const newTask = new Task({user, task, time});     
         const taskSaved = await newTask.save(); //.save para guardar en la bbdd
         return res.status(201).json(taskSaved);
     } catch (error) {

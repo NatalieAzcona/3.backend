@@ -18,4 +18,3 @@ const tasks = [
 
   module.exports = tasks;
 
-  //estos son solo ejemplos para hacer pruebas
