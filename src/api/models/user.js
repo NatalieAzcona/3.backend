@@ -2,15 +2,13 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcrypt')
 const Schema = mongoose.Schema;
 
-//Creo mi esquema de User
-
 const userSchema = new Schema (
     {
         name: {type: String, required: true, trim: true},
         email: {type: String, required: true, unique: true, lowercase: true, trim: true}, //unique para no dulplicar email
         password: {type: String, required: true, trim: true, minlength: [8, "8 caracteres mínimo"]},
         role: {type: String, enum: ["user", "admin"], default: "user"},
-        image: {type: String, required: true},
+        image: {type: String, trim: true, required: true},
         tasks: [{type: Schema.Types.ObjectId, ref: "tasks"}]
     },
     {

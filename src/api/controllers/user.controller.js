@@ -1,17 +1,21 @@
 const User = require("../models/User");
 const bcrypt = require('bcrypt')
-const { generateToken } = require ('../../utils/token.js') //Revisar si ruta ok
+const { generateToken } = require ('../../utils/token.js') 
+const { deleteImgCloudinary } = require('../../utils/deleteImgCloudinary');
 
-//REGISTER
 
 const registerUser = async(req,res) => {   //Quien tiene permiso de registrar un user? 
     try {
-        const {name, email, password, image} = req.body;
+        const {name, email, password} = req.body;
 
-        if(!name || !email || !password || !image) {
+        if(!name || !email || !password) {
             return  res.status(400).json({message: "¿y si terminas de escribir lo que te falta? :/" })
         }
 
+        if(!req.file) {
+            return res.status(400).json({message: "la imagen es obligatoria >:("})
+        }
+        
         const userExists = await User.findOne({email})
         if (userExists) {
             return res.status(400).json({message: "este email ya está registrado >:("})
@@ -22,7 +26,7 @@ const registerUser = async(req,res) => {   //Quien tiene permiso de registrar un
             name,
             email,
             password,
-            image,
+            image: req.file.path,
             role: "user"
         });
 
@@ -37,7 +41,6 @@ const registerUser = async(req,res) => {   //Quien tiene permiso de registrar un
     }
 }
 
-//LOGIN 
 const loginUser = async (req, res, next) => {
     try {
         const {email, password} = req.body;
@@ -49,10 +52,11 @@ const loginUser = async (req, res, next) => {
         const user = await User.findOne({email})
 
         if (!user) {
-            return res.status(400).json({message: "contraseña o usuario incorrecto"})
+            return res.status(400).json({message: "usuario no encontrado"})
         }
 
         const isPasswordValid = bcrypt.compareSync(password, user.password);
+        
         if (!isPasswordValid) {
             return res.status(400).json({ message: "contraseña o usuario incorrecto" });
         }    
@@ -68,10 +72,8 @@ const loginUser = async (req, res, next) => {
     }
 }
 
-
 //! Estos necesitan permiso de admin?
 
-//GET
 const getUsers = async (req, res) => {  //consulta a la bbdd, esto solo lo puede hacer un admin?
     try {
         const users = await User.find().select("-password")     //.find para encontrar, quitamos pass 
@@ -81,8 +83,6 @@ const getUsers = async (req, res) => {  //consulta a la bbdd, esto solo lo puede
         return res.status(400).json(error);
     }
 }
-
-//getUserbyId
 
 const getUserById = async (req, res) => {
     const {id} = req.params; // necesito sacar el id de la url
@@ -132,8 +132,6 @@ const updateUser = async (req, res) => {
     }
 }
 
-//DELETE
-
 //el usuario puede borrar su propia cuenta, el admin borra todas, el user no borra otras cuentas
 
 const deleteUser = async (req, res) => {
@@ -156,6 +154,10 @@ const deleteUser = async (req, res) => {
 
         if (!deletedUser) {
             return res.status(404).json({message: "usuario no encontrado"})
+        }
+
+        if(deletedUser.image) {
+            deleteImgCloudinary(deletedUser.image);
         }
 
         return res.status(200).json({
