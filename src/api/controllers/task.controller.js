@@ -1,4 +1,5 @@
 const Task = require("../models/Task");
+const User = require("../models/User");
 
 
 //Get - Todas las tasks
@@ -52,7 +53,13 @@ const getTaskById = async (req, res, next) => {
 const postTask = async (req, res, next) => {
     try {
         const {user, task, time} = req.body;
-     
+
+        //veo si tiene userId
+        if (!user) {
+            return res.status(400).json({ message: "falta el id de usuario" });
+        }
+
+        //veo si el usuario existe
         const userExists = await User.findById(user);
         if (!userExists) {
             return res.status(404).json({ message: "User no encontrado" });
@@ -60,6 +67,12 @@ const postTask = async (req, res, next) => {
 
         const newTask = new Task({user, task, time});     
         const taskSaved = await newTask.save(); //.save para guardar en la bbdd
+        
+        const userUpdated = await User.findByIdAndUpdate(
+            user, {
+                $addToSet: { tasks: taskSaved._id } //añado al array de tasks del user // addtoset agrega si no está, no borra
+            },
+        )
         return res.status(201).json(taskSaved);
     } catch (error) {
         console.log(error);
@@ -68,21 +81,6 @@ const postTask = async (req, res, next) => {
         })
     }
 }
-
-/* Cuando creas task con create
-const postTask = async (req, res, next) => {
-    try {
-        const { user, task, time } = req.body;
-        const newTask = await Task.create({user, task, time})
-        return res.status(201).json(newTask)
-    } catch (error) {
-        return res.status(500).json({
-        message: "error al crear task",
-        error
-        })
-    }
-}
-*/
 
 const updateTask = async (req, res) => {
     try {
@@ -119,6 +117,12 @@ const deleteTask = async (req, res, next) => {
             });
           }
 
+        if (taskDeleted.user) {
+            await User.findByIdAndUpdate(
+                taskDeleted.user,
+                { $pull: { tasks: taskDeleted._id } } //pull quita del array
+            );
+        }
         return res.status(200).json({
             message: "eliminamos esta task", 
             elemento: taskDeleted

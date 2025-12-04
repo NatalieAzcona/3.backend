@@ -1,5 +1,3 @@
-//SI ya agrego el id, tengo que cambiar este código
-
 const cloudinary = require('cloudinary').v2;
 
 const deleteImgCloudinary = (imgUrl) => {

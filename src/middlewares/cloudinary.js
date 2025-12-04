@@ -13,7 +13,7 @@ cloudinary.config({
 const storage = new CloudinaryStorage({
     cloudinary: cloudinary,
     params: {
-        folder: 'Uploads', // Carpeta en Cloudinary donde se guardarán los archivos
+        folder: 'UploadsBackend3', 
         allowed_formats: ['jpg', 'png', 'jpeg', 'gif', 'webp'], 
     },
 });

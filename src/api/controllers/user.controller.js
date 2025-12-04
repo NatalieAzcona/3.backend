@@ -26,7 +26,7 @@ const registerUser = async(req,res) => {   //Quien tiene permiso de registrar un
             name,
             email,
             password,
-            image: req.file.path,
+            image: req.file.path, //aquí guardo la ruta
             role: "user"
         });
 
@@ -72,8 +72,6 @@ const loginUser = async (req, res, next) => {
     }
 }
 
-//! Estos necesitan permiso de admin?
-
 const getUsers = async (req, res) => {  //consulta a la bbdd, esto solo lo puede hacer un admin?
     try {
         const users = await User.find().select("-password")     //.find para encontrar, quitamos pass 
@@ -102,8 +100,22 @@ try {
 const updateUser = async (req, res) => {
     try {
         const { id } = req.params;
+        const currentUser = req.user; //se comprueba con isAuth
 
-        const allowedToChange = ['name', 'email', 'image'];
+        const isAdmin = currentUser.role === 'admin';
+        const isUser = currentUser._id.toString() === id;
+
+        if (!isAdmin && !isUser) {
+            return res.status(403).json({message: "no tienes permiso para actualizar este usuario"})    
+        }
+
+        //buscar usuario y su imagen
+        const user = await User.findById(id);
+        if (!user) {
+            return res.status(404).json({message: "usuario no encontrado"})     
+        }
+
+        const allowedToChange = ['name', 'email'];
         const updates = {};
 
         for (const key of allowedToChange) {
@@ -112,6 +124,14 @@ const updateUser = async (req, res) => {
             }
         } //solo pueden cambiar lo permitido
 
+        //si hay nueva imagen, borro la antigua
+        if (req.file) {
+            if (user.image) {
+                deleteImgCloudinary(user.image);
+            }
+            updates.image = req.file.path;
+        }
+        //actualizo en bbdd
         const userUpdated = await User.findByIdAndUpdate(
             id, 
             { $set: updates }, // $set cambia valores de lo permitido
@@ -167,8 +187,6 @@ const deleteUser = async (req, res) => {
         return res.status(500).json({message: "Error al eliminar usuario", error})
     }
 }
-
-// CAMBIO ROL?
 
 const changeRole = async (req, res) => {
     try {
