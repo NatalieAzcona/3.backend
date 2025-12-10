@@ -12,7 +12,7 @@ Este repositorio contiene una API REST que permite:
 
 ---
 
-## ⚙️ Requisitos previos
+## Requisitos previos
 
 Asegúrate de tener instalado:
 
