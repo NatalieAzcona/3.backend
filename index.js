@@ -19,7 +19,7 @@ app.use("/api/v1/users", userRoutes);
 app.use("/api/v1/tasks", taskRoutes);
 
 
-// Levantar servidor
+// Servidor
 app.listen(PORT, () => {
   console.log(`Servidor levantado en http://localhost:${PORT}`);
 });

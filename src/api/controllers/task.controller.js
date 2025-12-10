@@ -3,7 +3,7 @@ const User = require("../models/User");
 
 
 //Get - Todas las tasks
-const getTask = async (req, res, next) => {  //consulta a la bbdd
+const getTask = async (req, res, next) => {  
     try {
         const tasks = await Task.find().populate("user", "name email role") // con el segundo param evito que me pase password    
         return res.status(200).json(tasks);
@@ -16,10 +16,9 @@ const getTask = async (req, res, next) => {  //consulta a la bbdd
 }
 
 // Get tareas por usuario
-
 const getTasksByUser = async (req, res, next) => {
     try {
-        const { userId } = req.params;   /// TIENE QUE SER EL ID DEL USUARIO PARA QUE TENGA SENTIDO!!! AAA
+        const { userId } = req.params;   /// TIENE QUE SER EL ID DEL USUARIO
         const tasks = await Task.find({user: userId}).populate(
             "user",
             "name email role"
@@ -30,8 +29,7 @@ const getTasksByUser = async (req, res, next) => {
     }
 }
 
-// Get por el id de la misma tarea
-
+// Get por el ID DE LA TAREA
 const getTaskById = async (req, res, next) => {
     try {
         const {id} = req.params;
@@ -48,29 +46,26 @@ const getTaskById = async (req, res, next) => {
         }  
 };
 
-
 //Creando el task con new
 const postTask = async (req, res, next) => {
     try {
         const {user, task, time} = req.body;
 
-        //veo si tiene userId
         if (!user) {
             return res.status(400).json({ message: "falta el id de usuario" });
         }
 
-        //veo si el usuario existe
         const userExists = await User.findById(user);
         if (!userExists) {
             return res.status(404).json({ message: "User no encontrado" });
         }
 
         const newTask = new Task({user, task, time});     
-        const taskSaved = await newTask.save(); //.save para guardar en la bbdd
+        const taskSaved = await newTask.save(); 
         
         const userUpdated = await User.findByIdAndUpdate(
             user, {
-                $addToSet: { tasks: taskSaved._id } //añado al array de tasks del user // addtoset agrega si no está, no borra
+                $addToSet: { tasks: taskSaved._id } // addtoset agrega si no está, no borra
             },
         )
         return res.status(201).json(taskSaved);

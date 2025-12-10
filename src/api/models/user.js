@@ -16,7 +16,7 @@ const userSchema = new Schema (
     }
 )
 
-// estoy encriptando la contraseña 
+// Encriptado de contraseña 
 userSchema.pre('save', function (next) {
     if (!this.isModified('password')) return next() //para no hashear dos veces
 

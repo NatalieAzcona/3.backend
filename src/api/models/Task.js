@@ -1,10 +1,8 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-//Creo mi esquema de tasks con mongoose
-
 const taskSchema = new Schema (
-    {user: {type: Schema.Types.ObjectId, ref: "users", required: true}, // también se puede mongoose.Types.ObjectId
+    {user: {type: Schema.Types.ObjectId, ref: "users", required: true}, 
     task: {type: String, enum: ["write", "edit", "publish", "design", "admin"], required: true},
     time: {type: Number, required: true, min: 0}
     },

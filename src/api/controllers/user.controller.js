@@ -30,7 +30,7 @@ const registerUser = async(req,res) => {   //Quien tiene permiso de registrar un
             role: "user"
         });
 
-        const savedUser = await newUser.save();   //aqui llamo al pre save, le cambio el pass
+        const savedUser = await newUser.save();   //aqui llamo al pre save
 
         return res.status(201).json(savedUser);
     } catch (error) {
@@ -72,7 +72,7 @@ const loginUser = async (req, res, next) => {
     }
 }
 
-const getUsers = async (req, res) => {  //consulta a la bbdd, esto solo lo puede hacer un admin?
+const getUsers = async (req, res) => {  
     try {
         const users = await User.find().select("-password")     //.find para encontrar, quitamos pass 
         return res.status(200).json(users);
@@ -83,7 +83,7 @@ const getUsers = async (req, res) => {  //consulta a la bbdd, esto solo lo puede
 }
 
 const getUserById = async (req, res) => {
-    const {id} = req.params; // necesito sacar el id de la url
+    const {id} = req.params; 
 try {
     const user = await User.findById(id).select("-password");
     if (user) {
@@ -100,7 +100,7 @@ try {
 const updateUser = async (req, res) => {
     try {
         const { id } = req.params;
-        const currentUser = req.user; //se comprueba con isAuth
+        const currentUser = req.user; 
 
         const isAdmin = currentUser.role === 'admin';
         const isUser = currentUser._id.toString() === id;
@@ -157,7 +157,7 @@ const updateUser = async (req, res) => {
 const deleteUser = async (req, res) => {
     try {
         const { id } = req.params;
-        const currentUser = req.user; //se comprueba con isAuth
+        const currentUser = req.user; 
 
         if(!currentUser) {
             return res.status(401).json({message: "no estás autorizado"})
