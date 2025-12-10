@@ -1,16 +1,21 @@
 const tasks = [
     {
-      "user": "1",
+      "email": "admin@gmail.com",
       "task": "write",
       "time": 3
     },
     {
-      "user": "2",
+      "email": "claudio@gmail.com",
       "task": "design",
       "time": 5
     },
     {
-      "user": "3",
+      "email": "rigoberto@gmail.com",
+      "task": "publish",
+      "time": 2
+    },
+    {
+      "email": "anacleto@gmail.com",
       "task": "publish",
       "time": 2
     }
