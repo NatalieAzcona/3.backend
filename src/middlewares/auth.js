@@ -6,13 +6,13 @@ const { verifyJwt } = require('../utils/token')
 
 const isAuth = async (req, res, next) => {
   const token = req.headers.authorization?.replace('Bearer ', '') //el replace es solo para eliminar el bearer
-  if(!token) return res.status(401).json("Unauthorized")
+  if(!token) return res.status(401).json("Sin autorización")
   try {
   const decoded = verifyJwt(token)
   req.user = await User.findById(decoded.id)  
   next()  
   } catch (error) {
-      return res.status(401).json("Unauthorized")
+      return res.status(401).json("Sin autorización")
     }
 
 
@@ -20,7 +20,7 @@ const isAuth = async (req, res, next) => {
 
 const isAdmin = (req, res, next) => { 
    if (req.user.role !== 'admin') {       
-      return res.status(403).json({message: "solo un admin puede hacer esto :)"})
+      return res.status(403).json({message: "solo un admin puede hacer esto"})
    }
     next()
 }

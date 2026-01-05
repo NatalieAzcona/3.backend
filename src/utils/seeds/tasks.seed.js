@@ -8,7 +8,7 @@ const User = require ("../../api/models/User.js")
 const setTaskSeed = async () => {
     try {
         await mongoose.connect (process.env.DB_URL)
-        console.log ("conectado a la bbdd para inyectar seed de tareas")
+        console.log ("Conectado a la bbdd para inyectar seed de tareas")
 
         //limpio mis tasks
         
@@ -21,7 +21,7 @@ const setTaskSeed = async () => {
             const user = await User.findOne({email: t.email})
 
         if(!user) {
-            console.log (`usuario no encontrado con el email ${t.email}`);   
+            console.log (`Usuario no encontrado con el email ${t.email}`);   
         }
 
         const newTask = new Task ({
@@ -32,16 +32,17 @@ const setTaskSeed = async () => {
 
         const savedTask = await newTask.save();
 
-        if(!user.tasks.includes(savedTask._id)) {
-            user.tasks.push(savedTask._id);
-            await user.save();
+        const userToUpdate = await User.findById(user._id);
+        if (!userToUpdate.tasks.includes(savedTask._id)) {
+            userToUpdate.tasks.push(savedTask._id); 
+            await userToUpdate.save();
         }
     }
 
         await mongoose.disconnect()
-        console.log ("desconectado de la bbdd, seed de tareas inyectada")
+        console.log ("Desconectado de la bbdd, seed de tareas inyectada")
     } catch (error) {
-        console.log ("error en la seed de tasks", error)
+        console.log ("Error en la seed de tasks", error)
     }
 }
 

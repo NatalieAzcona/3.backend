@@ -3,7 +3,7 @@ const Schema = mongoose.Schema;
 
 const taskSchema = new Schema (
     {user: {type: Schema.Types.ObjectId, ref: "users", required: true}, 
-    task: {type: String, enum: ["write", "edit", "publish", "design", "admin"], required: true},
+    task: {type: String, enum: ["write", "edit", "publish", "design"], required: true},
     time: {type: Number, required: true, min: 0}
     },
     {timestamps: true}

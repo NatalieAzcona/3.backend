@@ -83,6 +83,33 @@ Cada tarea pertenece a un usuario, se define el tipo de tarea y el tiempo de eje
 - `User.tasks[]` almacena solo los IDs de las tasks
 - `Task.user` almacena el ID del usuario propietario
 
+## Resumen de Endpoints
+
+### Usuarios
+
+| Método | Endpoint | Autenticación | Descripción |
+|------|----------|---------------|-------------|
+| POST | `/api/v1/users/register` | No | Registro de usuario con imagen |
+| POST | `/api/v1/users/login` | No | Inicio de sesión y obtención de JWT |
+| GET | `/api/v1/users` | Admin | Obtener todos los usuarios |
+| GET | `/api/v1/users/:id` | Usuario | Obtener usuario por ID |
+| PUT | `/api/v1/users/:id` | Usuario / Admin | Actualizar datos del usuario |
+| DELETE | `/api/v1/users/:id` | Usuario / Admin | Eliminar usuario |
+| PATCH | `/api/v1/users/:id/role` | Admin | Cambiar rol del usuario |
+
+---
+
+### Tasks
+
+| Método | Endpoint | Autenticación | Descripción |
+|------|----------|---------------|-------------|
+| GET | `/api/v1/tasks` | No | Obtener todas las tareas |
+| GET | `/api/v1/tasks/user/:userId` | No | Obtener tareas por usuario |
+| GET | `/api/v1/tasks/:id` | No | Obtener tarea por ID |
+| POST | `/api/v1/tasks` | No | Crear una tarea |
+| PUT | `/api/v1/tasks/:id` | No | Actualizar una tarea |
+| DELETE | `/api/v1/tasks/:id` | No | Eliminar una tarea |
+
 
 ## Endpoints API
 

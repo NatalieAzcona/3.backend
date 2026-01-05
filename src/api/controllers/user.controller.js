@@ -1,24 +1,25 @@
 const User = require("../models/User");
+const Task = require("../models/Task");
 const bcrypt = require('bcrypt')
 const { generateToken } = require ('../../utils/token.js') 
 const { deleteImgCloudinary } = require('../../utils/deleteImgCloudinary');
 
 
-const registerUser = async(req,res) => {   //Quien tiene permiso de registrar un user? 
+const registerUser = async(req,res) => {  
     try {
         const {name, email, password} = req.body;
 
         if(!name || !email || !password) {
-            return  res.status(400).json({message: "¿y si terminas de escribir lo que te falta? :/" })
+            return  res.status(400).json({message: "Faltan datos por rellenar" })
         }
 
         if(!req.file) {
-            return res.status(400).json({message: "la imagen es obligatoria >:("})
+            return res.status(400).json({message: "La imagen es obligatoria"})
         }
         
         const userExists = await User.findOne({email})
         if (userExists) {
-            return res.status(400).json({message: "este email ya está registrado >:("})
+            return res.status(400).json({message: "Este email ya está registrado"})
         }
 
         //no le pongo req.body para que no se hagan admin
@@ -34,9 +35,8 @@ const registerUser = async(req,res) => {   //Quien tiene permiso de registrar un
 
         return res.status(201).json(savedUser);
     } catch (error) {
-        console.log(error);
         return res.status(400).json({
-            message: "error al crear usuario", error
+            message: "Error al crear usuario", error
         })
     }
 }
@@ -46,19 +46,19 @@ const loginUser = async (req, res, next) => {
         const {email, password} = req.body;
 
         if (!email || !password) {
-            return res.status(400).json({ message: "faltan email o contraseña >:(" });
+            return res.status(400).json({ message: "Falta email o contraseña" });
           }
 
         const user = await User.findOne({email})
 
         if (!user) {
-            return res.status(400).json({message: "usuario no encontrado"})
+            return res.status(400).json({message: "Usuario no encontrado"})
         }
 
         const isPasswordValid = bcrypt.compareSync(password, user.password);
         
         if (!isPasswordValid) {
-            return res.status(400).json({ message: "contraseña o usuario incorrecto" });
+            return res.status(400).json({ message: "Credenciales incorrectas" });
         }    
         
         const token = generateToken(user._id) //genero token con id
@@ -68,7 +68,7 @@ const loginUser = async (req, res, next) => {
 
         return res.status(200).json({token, user: userWithoutPassword})
     } catch (error) {
-        return res.status(400).json("error en el login")
+        return res.status(400).json("Error en el login")
     }
 }
 
@@ -89,11 +89,11 @@ try {
     if (user) {
         return res.status(200).json(user);
     } else {
-        return res.status(404).json({message: "no se encontró"})
+        return res.status(404).json({message: "No se encontró ususario"})
     }
 } catch (error) {
     console.log(error);
-    return res.status(500).json({message: "no se consigue usuario", error})
+    return res.status(500).json({message: "No se consigue usuario", error})
 }
 };
 
@@ -144,9 +144,8 @@ const updateUser = async (req, res) => {
         }
         return res.status(200).json(userUpdated);
     } catch(error) {
-        console.log(error);
         return res.status(400).json({
-            message: "user can't be updated",
+            message: "No se puede actualizar el usuario",
             error
         })
     }
@@ -160,20 +159,29 @@ const deleteUser = async (req, res) => {
         const currentUser = req.user; 
 
         if(!currentUser) {
-            return res.status(401).json({message: "no estás autorizado"})
+            return res.status(401).json({message: "No estás autorizado"})
         }
 
         const isAdmin = currentUser.role === 'admin';
         const isUser = currentUser._id.toString() === id;
 
         if (!isAdmin && !isUser) {
-            return res.status(403).json({message: "no tienes permiso para eliminar este usuario"})
+            return res.status(403).json({message: "No tienes permiso para eliminar a este usuario"})
+        }
+
+        for (t of currentUser.tasks) {
+
+            try {
+                const deletedTask = await Task.findByIdAndDelete(t._id.toString()); 
+            } catch (error) {
+                console.error(`Error al eliminar la tarea con ID ${t._id}:`, error);
+            }
         }
 
         const deletedUser = await User.findByIdAndDelete(id);
 
         if (!deletedUser) {
-            return res.status(404).json({message: "usuario no encontrado"})
+            return res.status(404).json({message: "Usuario no encontrado"})
         }
 
         if(deletedUser.image) {
@@ -184,6 +192,7 @@ const deleteUser = async (req, res) => {
             message: "Usuario eliminado"
         })
     } catch (error) {
+        console.log(error)
         return res.status(500).json({message: "Error al eliminar usuario", error})
     }
 }
@@ -195,29 +204,28 @@ const changeRole = async (req, res) => {
         const {role} = req.body;
 
         if (!currentUser) {
-            return res.status(401).json({message: "no estás autorizado"})
+            return res.status(401).json({message: "No estás autorizado"})
         }
 
         if (currentUser.role !== 'admin') {
-            return res.status(403).json({message: "solo un admin puede cambiar el rol :)"})
+            return res.status(403).json({message: "Solo un admin puede cambiar el rol"})
         }
 
         const validRoles = ["user", "admin"];
         if (!validRoles.includes(role)) {
-            return res.status(400).json({ message: "rol no válido" });
+            return res.status(400).json({ message: "Rol no válido" });
         }
 
         const userToUpdate = await User.findByIdAndUpdate(id, {role});
 
         if (!userToUpdate) {
-            return res.status(404).json({message: "usuario no encontrado"})
+            return res.status(404).json({message: "Usuario no encontrado"})
         }
 
-        return res.status(200).json({message: "rol actualizado"})
+        return res.status(200).json({message: "Rol actualizado"})
 
-    } catch (error) {
-        console.log(error);
-        return res.status(500).json({message: "error al cambiar rol", error})
+    } catch (error) {;
+        return res.status(500).json({message: "Error al cambiar rol", error})
     }
 }
 

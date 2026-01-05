@@ -7,8 +7,7 @@ const getTask = async (req, res, next) => {
     try {
         const tasks = await Task.find().populate("user", "name email role") // con el segundo param evito que me pase password    
         return res.status(200).json(tasks);
-    } catch (error) {
-        console.log(error);
+    } catch (error) {;
         return res.status(500).json({
             message: "error al obtener tasks", error
         });
@@ -25,7 +24,7 @@ const getTasksByUser = async (req, res, next) => {
         );
         return res.status(200).json(tasks)
     } catch (error) {
-        return res.status(500).json({message: "no se encontró la tarea asignada", error})
+        return res.status(500).json({message: "No se encontró la tarea asignada", error})
     }
 }
 
@@ -35,12 +34,12 @@ const getTaskById = async (req, res, next) => {
         const {id} = req.params;
         const task = await Task.findById(id).populate("user", "name email role")
         if (!task) {
-            return res.status(404).json({ message: "task no encontrada" });
+            return res.status(404).json({ message: "Task no encontrada" });
           }
         return res.status(200).json(task);
         } catch (error) {
           return res.status(500).json({
-            message: "error al obtener la task",
+            message: "Error al obtener la task",
             error,
           });
         }  
@@ -52,7 +51,7 @@ const postTask = async (req, res, next) => {
         const {user, task, time} = req.body;
 
         if (!user) {
-            return res.status(400).json({ message: "falta el id de usuario" });
+            return res.status(400).json({ message: "Falta el id de usuario" });
         }
 
         const userExists = await User.findById(user);
@@ -69,8 +68,7 @@ const postTask = async (req, res, next) => {
             },
         )
         return res.status(201).json(taskSaved);
-    } catch (error) {
-        console.log(error);
+    } catch (error) {;
         return res.status(400).json({
             message: "Error al crear task", error,
         })
@@ -88,19 +86,17 @@ const updateTask = async (req, res) => {
         );
         if (!taskUpdated) {
             return res.status(404).json({
-                message: "task not found"
+                message: "Error al encontrar la task"
             })
         }
         return res.status(200).json(taskUpdated);
-    } catch(error) {
-        console.log(error);
+    } catch(error) {;
         return res.status(400).json({
-            message: "task can't be updated",
+            message: "Error al actualizar la task",
             error
         })
     }
 }
-
 
 const deleteTask = async (req, res, next) => {
     try {
@@ -108,7 +104,7 @@ const deleteTask = async (req, res, next) => {
         const taskDeleted = await Task.findByIdAndDelete(id);
         if (!taskDeleted) {
             return res.status(404).json({
-              message: "task not found",
+              message: "No se encuentra la task",
             });
           }
 
@@ -119,11 +115,10 @@ const deleteTask = async (req, res, next) => {
             );
         }
         return res.status(200).json({
-            message: "eliminamos esta task", 
+            message: "Task eliminada", 
             elemento: taskDeleted
         })
     } catch (error) {
-        console.log(error);
         return res.status(400).json("error")
     }
 }
