@@ -9,7 +9,7 @@ const getTask = async (req, res, next) => {
         return res.status(200).json(tasks);
     } catch (error) {;
         return res.status(500).json({
-            message: "error al obtener tasks", error
+            message: "error al obtener tasks"
         });
     }
 }
@@ -24,7 +24,7 @@ const getTasksByUser = async (req, res, next) => {
         );
         return res.status(200).json(tasks)
     } catch (error) {
-        return res.status(500).json({message: "No se encontró la tarea asignada", error})
+        return res.status(500).json({message: "Error al obtener tareas del usuario"})
     }
 }
 
@@ -39,8 +39,7 @@ const getTaskById = async (req, res, next) => {
         return res.status(200).json(task);
         } catch (error) {
           return res.status(500).json({
-            message: "Error al obtener la task",
-            error,
+            message: "Error al obtener la task"
           });
         }  
 };
@@ -69,8 +68,8 @@ const postTask = async (req, res, next) => {
         )
         return res.status(201).json(taskSaved);
     } catch (error) {;
-        return res.status(400).json({
-            message: "Error al crear task", error,
+        return res.status(500).json({
+            message: "Error al crear task"
         })
     }
 }
@@ -91,9 +90,8 @@ const updateTask = async (req, res) => {
         }
         return res.status(200).json(taskUpdated);
     } catch(error) {;
-        return res.status(400).json({
-            message: "Error al actualizar la task",
-            error
+        return res.status(500).json({
+            message: "Error al actualizar la task"
         })
     }
 }

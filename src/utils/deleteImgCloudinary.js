@@ -6,9 +6,7 @@ const deleteImgCloudinary = (imgUrl) => {
     const folderSplited = imgSplited.at(-2);
     const public_id = `${folderSplited}/${nameSplited}`;
 
-    cloudinary.uploader.destroy(public_id, () => {
-        console.log('Imagen eliminada en cloudinary');
-    });
+    cloudinary.uploader.destroy(public_id);
 };
 
 module.exports = { deleteImgCloudinary };

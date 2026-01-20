@@ -24,7 +24,7 @@ const setSeed = async () => {
     await mongoose.disconnect()
     console.log("desconectado de la bbdd, seed de usuarios inyectada")
 } catch (error) {
-    console.log("Error en la see de users", error)
+    console.log("Error en la seed de users", error)
 }
 }
 setSeed();

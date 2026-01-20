@@ -35,8 +35,8 @@ const registerUser = async(req,res) => {
 
         return res.status(201).json(savedUser);
     } catch (error) {
-        return res.status(400).json({
-            message: "Error al crear usuario", error
+        return res.status(500).json({
+            message: "Error al crear usuario"
         })
     }
 }
@@ -68,7 +68,7 @@ const loginUser = async (req, res, next) => {
 
         return res.status(200).json({token, user: userWithoutPassword})
     } catch (error) {
-        return res.status(400).json("Error en el login")
+        return res.status(500).json("Error en el login")
     }
 }
 
@@ -77,8 +77,7 @@ const getUsers = async (req, res) => {
         const users = await User.find().select("-password")     //.find para encontrar, quitamos pass 
         return res.status(200).json(users);
     } catch (error) {
-        console.log(error);
-        return res.status(400).json(error);
+        return res.status(500).json({ message: "error al obtener usuarios"});
     }
 }
 
@@ -92,8 +91,7 @@ try {
         return res.status(404).json({message: "No se encontró ususario"})
     }
 } catch (error) {
-    console.log(error);
-    return res.status(500).json({message: "No se consigue usuario", error})
+    return res.status(500).json({message: "No se consigue usuario"})
 }
 };
 
@@ -144,10 +142,7 @@ const updateUser = async (req, res) => {
         }
         return res.status(200).json(userUpdated);
     } catch(error) {
-        return res.status(400).json({
-            message: "No se puede actualizar el usuario",
-            error
-        })
+        return res.status(400).json({ message: "No se puede actualizar el usuario" })
     }
 }
 
@@ -169,12 +164,18 @@ const deleteUser = async (req, res) => {
             return res.status(403).json({message: "No tienes permiso para eliminar a este usuario"})
         }
 
-        for (t of currentUser.tasks) {
+        const userToDelete = await User.findById(id);
+        if(!userToDelete) {
+            return res.status(404).json({ message: "Usuario no encontrado"})
+        }
 
+        await Task.deleteMany({user: userToDelete._id})
+
+        if (userToDelete.image) {
             try {
-                const deletedTask = await Task.findByIdAndDelete(t._id.toString()); 
+                deleteImgCloudinary(userToDelete.image)
             } catch (error) {
-                console.error(`Error al eliminar la tarea con ID ${t._id}:`, error);
+                return res.status(500).json({ message: "Error al eliminar la imagen de usuario" })
             }
         }
 
@@ -184,16 +185,11 @@ const deleteUser = async (req, res) => {
             return res.status(404).json({message: "Usuario no encontrado"})
         }
 
-        if(deletedUser.image) {
-            deleteImgCloudinary(deletedUser.image);
-        }
-
         return res.status(200).json({
-            message: "Usuario eliminado"
+            message: "Usuario y tareas eliminadas"
         })
     } catch (error) {
-        console.log(error)
-        return res.status(500).json({message: "Error al eliminar usuario", error})
+        return res.status(500).json({message: "Error al eliminar usuario" })
     }
 }
 
@@ -225,7 +221,7 @@ const changeRole = async (req, res) => {
         return res.status(200).json({message: "Rol actualizado"})
 
     } catch (error) {;
-        return res.status(500).json({message: "Error al cambiar rol", error})
+        return res.status(500).json({message: "Error al cambiar rol"})
     }
 }
 
